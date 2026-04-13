@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo MLOps - Recommendation System</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; display: flex; gap: 20px; }
+        .app-container { flex: 1; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .mlops-panel { flex: 1; background: #1e1e1e; color: #00ff00; padding: 20px; border-radius: 12px; font-family: monospace; overflow-y: auto; max-height: 80vh; }
+        h2 { color: #333; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
+        h3 { color: #fff; border-bottom: 1px solid #555; padding-bottom: 5px; }
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+        .product-card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; text-align: center; background: #fafafa; }
+        .btn-action { background: #2563eb; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        .btn-action:hover { background: #1d4ed8; }
+        .stats-box { background: #e0f2fe; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; font-weight: bold; color: #0369a1; }
+        .recommendation-box { margin-top: 20px; padding: 15px; border-radius: 8px; text-align: center; font-size: 18px; font-weight: bold; border: 2px dashed #ccc; }
+        .log-entry { margin-bottom: 10px; border-bottom: 1px dashed #333; padding-bottom: 5px; }
+        .log-time { color: #fbbf24; }
+        .log-highlight { color: #38bdf8; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <h2>📱 Smart Fashion App</h2>
+        
+        <div class="stats-box">
+            <span>Tuổi: 20</span>
+            <span>Số lần Click: <span id="clickCount">0</span></span>
+            <span>Tỷ lệ Click (Real-time): <span id="clickRateDisplay">0.0</span></span>
+        </div>
+
+        <div class="product-grid">
+            <div class="product-card">
+                <h3>👕 Áo Thun Nam</h3>
+                <p>Giá: 150,000 VND</p>
+                <button class="btn-action" onclick="interactProduct(150000, true)">Click Xem / Thích</button>
+                <button class="btn-action" style="background:#4b5563;" onclick="interactProduct(150000, false)">Lướt qua</button>
+            </div>
+            <div class="product-card">
+                <h3>👟 Giày Sneaker</h3>
+                <p>Giá: 500,000 VND</p>
+                <button class="btn-action" onclick="interactProduct(500000, true)">Click Xem / Thích</button>
+                <button class="btn-action" style="background:#4b5563;" onclick="interactProduct(500000, false)">Lướt qua</button>
+            </div>
+        </div>
+
+        <div id="ai-result" class="recommendation-box">
+            Khu vực AI Gợi ý Sản phẩm (Đang chờ tương tác...)
+        </div>
+    </div>
+
+    <div class="mlops-panel">
+        <h3>⚙️ MLOps System Logs (Monitoring)</h3>
+        <div id="logs">
+            <div class="log-entry"><span class="log-time">[System]</span> Khởi tạo kết nối. Sẵn sàng nhận Client Requests.</div>
+        </div>
+    </div>
+
+    <script>
+        let totalViews = 0;
+        let totalClicks = 0;
+        const userAge = 20;
+
+        function addLog(message) {
+            const logsDiv = document.getElementById('logs');
+            const time = new Date().toLocaleTimeString();
+            logsDiv.innerHTML = `<div class="log-entry"><span class="log-time">[${time}]</span> ${message}</div>` + logsDiv.innerHTML;
+        }
+
+        async function interactProduct(price, isClick) {
+            // 1. Cập nhật hành vi người dùng (Mô phỏng thay đổi dữ liệu)
+            totalViews++;
+            if (isClick) totalClicks++;
+            
+            const clickRate = (totalClicks / totalViews).toFixed(2);
+            document.getElementById('clickCount').innerText = totalClicks;
+            document.getElementById('clickRateDisplay').innerText = clickRate;
+
+            addLog(`Người dùng tương tác. Cập nhật đặc trưng vào <span class="log-highlight">Redis (Online Feature Store)</span>...`);
+
+            // Giao diện chờ
+            const resultBox = document.getElementById('ai-result');
+            resultBox.innerHTML = "⏳ Chờ suy luận từ Cloud Run...";
+            resultBox.style.backgroundColor = "#f3f4f6";
+
+            // 2. Gửi Request lên Google Cloud Run
+            addLog(`Gửi Client Request tới <span class="log-highlight">FastAPI (GCP Cloud Run)</span>. Dữ liệu: [ClickRate: ${clickRate}, Price: ${price}, Age: ${userAge}]`);
+            
+            const apiUrl = `https://recsys-service-244222136687.asia-southeast1.run.app/predict?click_rate=${clickRate}&price=${price}&age=${userAge}`;
+            const startTime = performance.now();
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                const latency = Math.round(performance.now() - startTime);
+
+                addLog(`Tải <span class="log-highlight">Champion Model (XGBoost)</span> từ MLflow Registry. Trạng thái: Thành công.`);
+                addLog(`Inference hoàn tất trong ${latency}ms. Gửi metric lên <span class="log-highlight">Prometheus</span>.`);
+
+                // 3. Hiển thị kết quả Real-time
+                if (data["Ket qua"] === "Nen goi y mua hang") {
+                    resultBox.innerHTML = `✅ Phân tích: Hành vi mua CỰC CAO!<br><button style="margin-top:10px; background:#ef4444; color:white; border:none; padding:10px 20px; font-size:18px; border-radius:5px; animation: pulse 1s infinite;">🔥 TUNG VOUCHER MUA NGAY 🔥</button>`;
+                    resultBox.style.backgroundColor = "#dcfce3";
+                    resultBox.style.borderColor = "#22c55e";
+                    addLog(`Kết quả: <span style="color:#22c55e;">Gợi ý thành công (Trigger Business Action)</span>.`);
+                } else {
+                    resultBox.innerHTML = `❌ Phân tích: Tỷ lệ chốt đơn thấp.<br><span style='font-size:14px;'>Đang ẩn nút mua hàng để tối ưu UX.</span>`;
+                    resultBox.style.backgroundColor = "#fee2e2";
+                    resultBox.style.borderColor = "#ef4444";
+                    addLog(`Kết quả: <span style="color:#ef4444;">Bỏ qua hiển thị quảng cáo</span>.`);
+                }
+            } catch (error) {
+                addLog(`<span style="color:red;">Lỗi kết nối. Vui lòng kiểm tra lại Cloud Run hoặc CORS.</span>`);
+            }
+        }
+    </script>
+</body>
+</html>

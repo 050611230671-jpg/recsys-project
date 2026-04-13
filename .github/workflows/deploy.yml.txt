@@ -1,0 +1,27 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Kéo code từ GitHub về máy ảo của Robot
+      uses: actions/checkout@v3
+
+    - name: Xuất trình chìa khóa để vào Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+    - name: Ra lệnh Deploy lên Google Cloud Run
+      run: |
+        gcloud run deploy recsys-service \
+          --project recsys-ai \
+          --region asia-southeast1 \
+          --source . \
+          --allow-unauthenticated
