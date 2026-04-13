@@ -1,0 +1,6 @@
+recsys-project/
+├── main.py
+├── requirements.txt
+├── templates/
+│   └── index.html  <-- Tạo file mới ở đây
+└── ...

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RecSys AI - Gợi ý sản phẩm</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f9; text-align: center; }
+        .container { display: flex; justify-content: center; gap: 20px; margin-top: 50px; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 200px; }
+        img { border-radius: 5px; margin-bottom: 10px; }
+        h1 { color: #333; }
+        .price { color: #e91e63; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🌟 Hệ thống Gợi ý Sản phẩm 🌟</h1>
+    <p>Chào mừng bạn quay trở lại!</p>
+    <div class="container">
+        {% for p in products %}
+        <div class="card">
+            <img src="{{ p.img }}" alt="product">
+            <h3>{{ p.name }}</h3>
+            <p class="price">{{ p.price }}</p>
+            <button>Xem chi tiết</button>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
