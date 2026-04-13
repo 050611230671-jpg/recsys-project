@@ -20,7 +20,7 @@ jobs:
 
     - name: Ra lệnh Deploy lên Google Cloud Run
       run: |
-        gcloud run deploy recsys-service \
+        gcloud run deploy recsys-app \
           --project recsys-ai \
           --region asia-southeast1 \
           --source . \
