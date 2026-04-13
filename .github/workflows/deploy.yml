@@ -1,25 +1,9 @@
-name: Deploy to Cloud Run
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Kéo code từ GitHub
-      uses: actions/checkout@v4  # Đã cập nhật từ v3 lên v4
-
-    - name: Đăng nhập Google Cloud
-      uses: google-github-actions/auth@v2 # Đã cập nhật từ v1 lên v2
-      with:
-        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-
-    - name: Thiết lập Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v2 # Đã cập nhật từ v1 lên v2
-
-    - name: Ra lệnh Deploy
-      run: gcloud run deploy recsys-app --project recsys-ai --region asia-southeast1 --source . --allow-unauthenticated
+- name: Ra lệnh Deploy
+      run: |
+        gcloud run deploy recsys-app \
+          --project recsys-ai \
+          --region asia-southeast1 \
+          --source . \
+          --allow-unauthenticated \
+          --quiet \
+          --no-cache
