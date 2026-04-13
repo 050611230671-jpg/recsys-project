@@ -1,6 +1,6 @@
 recsys-project/
-├── main.py
-├── requirements.txt
-├── templates/
-│   └── index.html  <-- Tạo file mới ở đây
-└── ...
+├── main.py              <-- File xử lý chính
+├── requirements.txt     <-- Danh sách thư viện
+├── Dockerfile           <-- Bản thiết kế để đóng gói app
+└── templates/           <-- THƯ MỤC NÀY PHẢI VIẾT THƯỜNG
+    └── index.html       <-- File giao diện
