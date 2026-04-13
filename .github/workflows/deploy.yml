@@ -1,9 +1,30 @@
-- name: Ra lệnh Deploy
-      run: |
-        gcloud run deploy recsys-app \
-          --project recsys-ai \
-          --region asia-southeast1 \
-          --source . \
-          --allow-unauthenticated \
-          --quiet \
-          --no-cache
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kéo code từ Github
+        uses: actions/checkout@v4
+
+      - name: Dang nhap Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Thiet lap Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Ra lenh Deploy
+        run: |
+          gcloud run deploy recsys-app \
+            --project recsys-ai \
+            --region asia-southeast1 \
+            --source . \
+            --allow-unauthenticated \
+            --quiet
