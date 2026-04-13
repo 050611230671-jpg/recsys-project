@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 
-# Phải khớp với tên thư mục 'templates'
+# Đảm bảo chữ 'templates' ở đây viết thường, khớp với tên thư mục
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
