@@ -1,6 +1,34 @@
-recsys-project/
-├── main.py              <-- File xử lý chính
-├── requirements.txt     <-- Danh sách thư viện
-├── Dockerfile           <-- Bản thiết kế để đóng gói app
-└── templates/           <-- THƯ MỤC NÀY PHẢI VIẾT THƯỜNG
-    └── index.html       <-- File giao diện
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Gợi Ý Sản Phẩm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-blue-600 p-4 text-white text-center text-2xl font-bold shadow-lg">
+        Cửa Hàng AI Recsys 🚀
+    </nav>
+    <div class="container mx-auto px-4 py-8">
+        <h2 class="text-xl font-semibold mb-6 text-gray-700">Sản phẩm gợi ý cho bạn:</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for item in products %}
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+                <img class="h-48 w-full object-cover" src="{{ item.img }}" alt="{{ item.name }}">
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900">{{ item.name }}</h3>
+                    <p class="text-blue-600 font-bold mt-2 text-xl">{{ item.price }}</p>
+                    <button class="mt-4 w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                        Mua ngay
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <footer class="text-center py-10 text-gray-500 text-sm">
+        © 2026 Recsys Project - Deploy thành công trên Cloud Run
+    </footer>
+</body>
+</html>

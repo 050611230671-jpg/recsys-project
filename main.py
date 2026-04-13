@@ -3,12 +3,15 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
+
+# Đảm bảo thư mục 'templates' tồn tại trên máy bạn
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
+    # Dữ liệu sản phẩm có thêm link ảnh (img)
     products = [
-        {"name": "Giày Sneaker", "price": "1.200k", "img": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400"},
-        {"name": "Áo Hoodie", "price": "450k", "img": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400"}
+        {"name": "Giày Sneaker Nike", "price": "1.250.000đ", "img": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500"},
+        {"name": "Áo Hoodie Local Brand", "price": "450.000đ", "img": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500"}
     ]
     return templates.TemplateResponse("index.html", {"request": request, "products": products})
