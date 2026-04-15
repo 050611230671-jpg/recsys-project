@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Gợi Ý Sản Phẩm</title>
+    <title>Hệ Thống Gợi Ý Sản Phẩm MLOps</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -12,14 +12,15 @@
     </nav>
     <div class="container mx-auto px-4 py-8">
         <h2 class="text-xl font-semibold mb-6 text-gray-700">Sản phẩm gợi ý cho bạn:</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {% for item in products %}
             <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-shadow duration-300">
                 <img class="h-48 w-full object-cover" src="{{ item.img }}" alt="{{ item.name }}">
                 <div class="p-6">
                     <h3 class="text-lg font-bold text-gray-900">{{ item.name }}</h3>
                     <p class="text-blue-600 font-bold mt-2 text-xl">{{ item.price }}</p>
-                    <button class="mt-4 w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                    <button onclick="fetchRecommendations()" class="mt-4 w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
                         Mua ngay
                     </button>
                 </div>
@@ -27,8 +28,47 @@
             {% endfor %}
         </div>
     </div>
+    
     <footer class="text-center py-10 text-gray-500 text-sm">
-        © 2026 Recsys Project - Deploy thành công trên Cloud Run
+        © 2026 Recsys Project - Tích hợp Endpoint POST /recommend
     </footer>
+
+    <script>
+        async function fetchRecommendations() {
+            try {
+                // Bước 2: Gửi Request POST tới địa chỉ /recommend
+                const response = await fetch('/recommend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                // Nhận kết quả JSON
+                const data = await response.json();
+                
+                // Bước 3: Cập nhật giao diện người dùng
+                const grid = document.getElementById('product-grid');
+                grid.innerHTML = ''; // Xóa các sản phẩm cũ
+                
+                // Vẽ lại các sản phẩm mới
+                data.recommendations.forEach(item => {
+                    grid.innerHTML += `
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+                            <img class="h-48 w-full object-cover" src="${item.img}" alt="${item.name}">
+                            <div class="p-6">
+                                <h3 class="text-lg font-bold text-gray-900">${item.name}</h3>
+                                <p class="text-blue-600 font-bold mt-2 text-xl">${item.price}</p>
+                                <button onclick="fetchRecommendations()" class="mt-4 w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                                    Mua ngay
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error("Lỗi khi lấy gợi ý:", error);
+                alert("Hệ thống đang bận, vui lòng thử lại!");
+            }
+        }
+    </script>
 </body>
 </html>
